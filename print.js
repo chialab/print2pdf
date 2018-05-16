@@ -30,9 +30,10 @@ function uploadBuffer (Body, Dest) {
  * @param {URL} source URL to be printed.
  * @param {URL} dest Destination S3 path.
  * @param {string} format PDF format.
+ * @param {string} media Media to be emulated.
  * @returns {Promise<void>}
  */
-module.exports = async (source, dest, format) => {
+module.exports = async (source, dest, format, media = 'print') => {
     console.log('Launching browser...');
     const browser = await puppeteer.launch({
         args: [
@@ -51,6 +52,7 @@ module.exports = async (source, dest, format) => {
     console.log('Done!');
 
     console.log('Exporting page as PDF...');
+    page.emulateMedia(media);
     const buffer = await page.pdf({ format });
     console.log('Done!');
     

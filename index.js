@@ -23,8 +23,14 @@ require('yargs')
                     describe: 'The format of the PDF',
                     default: 'A4',
                     choices: ['A4', 'Letter'],
+                })
+                .option('media', {
+                    type: 'string',
+                    describe: 'The media to be emulated while printing',
+                    default: 'print',
+                    choices: ['print', 'screen'],
                 });
         },
-        async (argv) => await print(argv.source, argv.dest, argv.format)
+        async (argv) => await print(argv.source, argv.dest, argv.format, argv.media)
     )
     .argv;
