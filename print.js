@@ -52,7 +52,7 @@ module.exports = async (source, dest, format, media = 'print') => {
     console.log('Done!');
 
     console.log('Exporting page as PDF...');
-    page.emulateMedia(media);
+    await page.emulateMedia(media);
     const buffer = await page.pdf({ format });
     console.log('Done!');
     
