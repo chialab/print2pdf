@@ -57,18 +57,18 @@ const sendResponse = (res, statusCode, body, headers = {}) => {
  * Send an error.
  *
  * @param {http.ServerResponse} res Server response.
- * @param {number} statusCode Status code.
+ * @param {number} status Status code.
  * @param {Object} details Additional details.
  * @returns {Promise<void>}
  */
-const sendError = (res, statusCode, details = {}) => {
+const sendError = (res, status, details = {}) => {
     const body = {
-        statusCode,
-        message: http.STATUS_CODES[statusCode],
+        status,
+        message: http.STATUS_CODES[status],
         details,
     };
 
-    return sendResponse(res, statusCode, body);
+    return sendResponse(res, status, body);
 };
 
 /**
