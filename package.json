@@ -5,6 +5,7 @@
   "description": "",
   "main": "print.js",
   "dependencies": {
+    "ajv": "^6.5.0",
     "aws-sdk": "^2.240.1",
     "yargs": "^11.0.0"
   },

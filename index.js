@@ -1,4 +1,3 @@
-const print = require('./print.js');
 const url = require('url');
 
 require('yargs')
@@ -31,6 +30,35 @@ require('yargs')
                     choices: ['print', 'screen'],
                 });
         },
-        async (argv) => await print(argv.source, argv.dest, argv.format, argv.media)
+        async (argv) => {
+            const print = require('./print.js');
+
+            await print(argv.source, argv.dest, argv.format, argv.media);
+        }
+    )
+    .command(
+        'server',
+        'Listen for requests to print',
+        (yargs) => {
+            yargs
+                .env(true)
+                .option('port', {
+                    type: 'number',
+                    default: 8080,
+                })
+                .option('base', {
+                    type: 'string',
+                    describe: 'The destination S3 base URL',
+                    coerce: (base) => url.parse(base),
+                    required: true,
+                });
+        },
+        (argv) => {
+            const server = require('./server')({ s3base: argv.base });
+
+            server.listen(argv.port, () => {
+                console.log(`Listening on port ${argv.port}...`);
+            });
+        }
     )
     .argv;
