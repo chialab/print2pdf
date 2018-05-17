@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema",
+  "title": "Request",
+  "type": "object",
+  "required": [
+    "url",
+    "file_name"
+  ],
+  "properties": {
+    "url": {
+      "description": "The URL of the page you want to export as a PDF.",
+      "type": "string",
+      "format": "url"
+    },
+    "file_name": {
+      "description": "A friendly file name to be given to the exported file.",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9!\"#$£%&'()*+,.:;<=>?@\\[\\] ^_`{|}~-]+\\.pdf$"
+    },
+    "media": {
+      "description": "The media to be emulated when exporting PDF.",
+      "type": "string",
+      "enum": [
+        "screen",
+        "print"
+      ],
+      "default": "print"
+    },
+    "format": {
+      "description": "The paper format to use when printing to PDF.",
+      "type": "string",
+      "enum": [
+        "Letter",
+        "Legal",
+        "Tabload",
+        "Ledger",
+        "A0",
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5"
+      ],
+      "default": "A4"
+    },
+    "background": {
+      "description": "Enable or disable backgrounds in exported PDF file.",
+      "type": "boolean",
+      "default": true
+    },
+    "layout": {
+      "description": "Page layout.",
+      "type": "string",
+      "enum": [
+        "portrait",
+        "landscape"
+      ],
+      "default": "portrait"
+    },
+    "margin": {
+      "description": "Page margin.",
+      "type": "object",
+      "required": [
+        "top",
+        "bottom",
+        "left",
+        "right"
+      ],
+      "properties": {
+        "top": {
+          "type": "string"
+        },
+        "bottom": {
+          "type": "string"
+        },
+        "left": {
+          "type": "string"
+        },
+        "right": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "scale": {
+      "description": "Print scale.",
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "default": 1
+    }
+  }
+}

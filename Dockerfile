@@ -33,16 +33,16 @@ WORKDIR /app
 USER pptruser
 
 # Copy package.json and package-lock.json first, to improve Docker's layer caching.
-COPY package.json package-lock.json /app/
+ADD [ "package*.json", "/app/" ]
 
 # Install dependencies.
 RUN npm install --production
 
 # Copy everything else.
-COPY index.js print.js server.js schema.json /app/
+ADD [ "src/", "/app/src/" ]
 
 # Expose default port 8080.
 EXPOSE 8080
 
 ENTRYPOINT ["dumb-init", "--"]
-CMD [ "node", "index.js", "server" ]
+CMD [ "npm", "start", "--", "server" ]

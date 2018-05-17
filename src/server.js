@@ -5,33 +5,19 @@ const ajv = new Ajv();
 ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));
 const validator = ajv.compile(require('./schema.json'));
 const print = require('./print');
+const uuid = require('./uuid');
 
 /**
  * Request body.
- * 
+ *
  * @typedef {Object} RequestBody
  * @property {string} url URL to be printed.
  * @property {string} file_name File name to save.
  */
 
 /**
- * Basic UUIDv4 generator.
- * 
- * @returns {string}
- */
-const uuid = () => 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
-    const rand = Math.random() * 16 | 0;
-    let digit = rand;
-    if (char !== 'x') {
-        digit = rand & 0x3 | 0x8;
-    }
-
-    return digit.toString(16);
-});
-
-/**
  * Parse and validate request body.
- * 
+ *
  * @param {string} body Request body.
  * @returns {RequestBody}
  * @throws {SyntaxError} Throws an error upon encountering an invalid request body.
@@ -69,7 +55,7 @@ const sendResponse = (res, statusCode, body, headers = {}) => {
 
 /**
  * Send an error.
- * 
+ *
  * @param {http.ServerResponse} res Server response.
  * @param {number} statusCode Status code.
  * @param {Object} details Additional details.
@@ -87,7 +73,7 @@ const sendError = (res, statusCode, details = {}) => {
 
 /**
  * Process a single request.
- * 
+ *
  * @param {http.ServerResponse} res Server response.
  * @param {string} requestMethod Request method.
  * @param {url.Url} requestUrl Parsed request URL.
@@ -150,7 +136,7 @@ const processRequest = (res, requestMethod, requestUrl, requestHeaders, requestB
 
 /**
  * Run server.
- * 
+ *
  * @param {{s3base: url.URL}} options Additional options.
  * @returns {http.Server}
  */

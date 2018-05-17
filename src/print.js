@@ -15,7 +15,7 @@ const browser = puppeteer.launch({
 
 /**
  * Print options.
- * 
+ *
  * @typedef {Object} PrintOptions
  * @property {("screen"|"print")} media Media to be emulated when printing.
  * @property {("Letter"|"Legal"|"Tabload"|"Ledger"|"A0"|"A1"|"A2"|"A3"|"A4"|"A5")} format Paper format.
@@ -27,7 +27,7 @@ const browser = puppeteer.launch({
 
 /**
  * Get a buffer representing a Web page in PDF format.
- * 
+ *
  * @param {url.URL} source Page URL.
  * @param {Partial<PrintOptions>} options Print options.
  * @returns {Promise<Buffer>}
@@ -39,14 +39,14 @@ const getBuffer = async (source, options) => {
     const landscape = options.layout === 'landscape';
     const margin = options.margin;
     const scale = options.scale || 1;
-    
+
     console.log(`Fetching page ${source.href}...`);
     const context = await browser; // TODO: when new version of Puppeteer is released, use `createIncognitoBrowserContext()`.
     const page = await context.newPage();
     await page.goto(source.href, { waitUntil: 'networkidle2' });
 
-    console.log('Exporting page as PDF...', options);
-    await page.emulateMedia(options.media || 'print');
+    console.log(`Exporting page as PDF (${JSON.stringify(options)})...`);
+    await page.emulateMedia(media);
     const buffer = await page.pdf({ format, printBackground, landscape, margin, scale });
 
     page.close(); // TODO: when new version of Puppeteer is released, close context.
@@ -56,7 +56,7 @@ const getBuffer = async (source, options) => {
 
 /**
  * Upload a buffer to S3.
- * 
+ *
  * @param {Buffer} Body Object's buffer.
  * @param {url.URL} Dest Destination.
  * @returns {Promise<string>}
@@ -75,19 +75,25 @@ const uploadBuffer = (Body, Dest) => {
     return new Promise((resolve, reject) => {
         const s3 = new AWS.S3({ region });
 
+        console.log(`Uploading PDF to s3://${Bucket}/${Key}...`);
         s3.putObject({ Body, Bucket, Key }, (error, data) => {
             if (error) {
                 reject(error);
+
+                return;
             }
 
-            resolve(url.resolve(baseUrl, Key));
+            const pdfUrl = url.resolve(baseUrl, Key);
+            console.log(`Object available at ${pdfUrl}`);
+
+            resolve(pdfUrl);
         });
     });
 };
 
 /**
  * Print a PDF and upload to S3.
- * 
+ *
  * @param {url.URL} source URL to be printed.
  * @param {url.URL} dest Destination S3 path.
  * @param {Partial<PrintOptions>} options Print options.
@@ -95,11 +101,7 @@ const uploadBuffer = (Body, Dest) => {
  */
 module.exports = async (source, dest, options = {}) => {
     const buffer = await getBuffer(source, options);
-    
-    console.log(`Uploading PDF to ${dest.href}...`);
     const pdfUrl = await uploadBuffer(buffer, dest);
-
-    console.log(`Object available at ${pdfUrl}`);
 
     return pdfUrl;
 };
