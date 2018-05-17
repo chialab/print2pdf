@@ -63,7 +63,7 @@ Content-Type: application/json
         "left": "1cm",
         "right": "1cm",
     },
-    "scale": .94
+    "scale": 0.94
 }
 ```
 
@@ -145,8 +145,8 @@ deploy this app on Heroku, simply create an app, and run:
 
 ```bash
 # Set config variables:
-$ heroku config:set --app your-app-name AWS_ACCESS_KEY_ID=AKIA0000000EXAMPLE
-$ heroku config:set --app your-app-name AWS_SECRET_ACCESS_KEY=SecretAccessKeyFromAWS
+$ heroku config:set --app your-app-name AWS_ACCESS_KEY_ID=AKIA000000000EXAMPLE
+$ heroku config:set --app your-app-name AWS_SECRET_ACCESS_KEY=SECRETKEYFROMAWS
 $ heroku config:set --app your-app-name AWS_DEFAULT_REGION=your-region-of-choice
 $ heroku config:set --app your-app-name BASE=s3://your-s3-bucket/optional-prefix
 
