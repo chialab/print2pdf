@@ -25,29 +25,34 @@ require('yargs')
                     description: 'The destination file name',
                 })
                 .option('media', {
+                    alias: 'm',
                     type: 'string',
                     description: 'The media to be emulated while printing',
                     default: 'print',
                     choices: ['print', 'screen'],
                 })
                 .option('format', {
+                    alias: 'f',
                     type: 'string',
                     description: 'The format of the PDF',
                     default: 'A4',
                     choices: ['Letter', 'Legal', 'Tabload', 'Ledger', 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'],
                 })
                 .option('background', {
+                    alias: 'b',
                     type: 'boolean',
                     description: 'Enable or disable background graphics in the PDF',
                     default: true,
                 })
                 .option('layout', {
+                    alias: 'l',
                     type: 'string',
                     description: 'Page layout',
                     default: 'portrait',
                     choices: ['portrait', 'landscape'],
                 })
                 .option('scale', {
+                    alias: 's',
                     type: 'number',
                     description: 'Scale',
                     default: 1,
@@ -74,7 +79,9 @@ require('yargs')
         (yargs) => {
             yargs
                 .option('port', {
+                    alias: 'p',
                     type: 'number',
+                    description: 'Port to which bind server',
                     default: 8080,
                 });
         },
