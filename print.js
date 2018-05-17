@@ -21,7 +21,7 @@ const browser = puppeteer.launch({
  * @property {("Letter"|"Legal"|"Tabload"|"Ledger"|"A0"|"A1"|"A2"|"A3"|"A4"|"A5")} format Paper format.
  * @property {boolean} background Enable or disable background in printed PDF.
  * @property {("portrait"|"landscape")} layout Page layout.
- * @property {{top: number, bottom: number, left: number, right: number}} margin Margins.
+ * @property {{top: string, bottom: string, left: string, right: string}} margin Margins.
  * @property {number} scale Scale.
  */
 

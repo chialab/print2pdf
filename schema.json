@@ -68,20 +68,16 @@
             ],
             "properties": {
                 "top": {
-                    "type": "number",
-                    "exclusiveMinimum": 0
+                    "type": "string"
                 },
                 "bottom": {
-                    "type": "number",
-                    "exclusiveMinimum": 0
+                    "type": "string"
                 },
                 "left": {
-                    "type": "number",
-                    "exclusiveMinimum": 0
+                    "type": "string"
                 },
                 "right": {
-                    "type": "number",
-                    "exclusiveMinimum": 0
+                    "type": "string"
                 }
             },
             "additionalProperties": false
