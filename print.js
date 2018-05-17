@@ -20,7 +20,7 @@ const browser = puppeteer.launch({
  * @property {("screen"|"print")} media Media to be emulated when printing.
  * @property {("Letter"|"Legal"|"Tabload"|"Ledger"|"A0"|"A1"|"A2"|"A3"|"A4"|"A5")} format Paper format.
  * @property {boolean} background Enable or disable background in printed PDF.
- * @property {("portrait"|"landscape")} orientation Orientation.
+ * @property {("portrait"|"landscape")} layout Page layout.
  * @property {{top: number, bottom: number, left: number, right: number}} margin Margins.
  * @property {number} scale Scale.
  */
@@ -36,7 +36,7 @@ const getBuffer = async (source, options) => {
     const format = options.format || 'A4';
     const media = options.media || 'print';
     const printBackground = 'background' in options ? options.background : true;
-    const landscape = options.orientation === 'landscape';
+    const landscape = options.layout === 'landscape';
     const margin = options.margin;
     const scale = options.scale || 1;
     

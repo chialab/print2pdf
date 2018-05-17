@@ -48,8 +48,8 @@
             "type": "boolean",
             "default": true
         },
-        "orientation": {
-            "description": "Page orientation.",
+        "layout": {
+            "description": "Page layout.",
             "type": "string",
             "enum": [
                 "portrait",
