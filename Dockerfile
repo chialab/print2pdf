@@ -45,4 +45,4 @@ ADD [ "src/", "/app/src/" ]
 EXPOSE 8080
 
 ENTRYPOINT ["dumb-init", "--"]
-CMD [ "npm", "start", "--", "server" ]
+CMD [ "npm", "run", "serve" ]

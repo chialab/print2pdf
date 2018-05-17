@@ -183,16 +183,16 @@ $ docker build -t chialab/print2pdf .
 2. Run Docker container:
     ```bash
     # As a server bound to your local port 3000:
-    $ docker run --rm --env-file .env -p 8080:3000 chialab/print2pdf
+    $ docker run --rm --env-file .env -p 3000:8080 chialab/print2pdf
 
     # As a CLI command to export a single page:
-    $ docker run --rm --env-file .env chialab/print2pdf npm start -- print https://www.chialab.io/ chialabio.pdf
+    $ docker run --rm --env-file .env chialab/print2pdf npm run print -- https://www.chialab.io/ chialabio.pdf
     ```
 
 ### Listing available options
 
 ```bash
 $ docker run --rm chialab/print2pdf npm start -- --help
-$ docker run --rm chialab/print2pdf npm start -- print --help
-$ docker run --rm chialab/print2pdf npm start -- server --help
+$ docker run --rm chialab/print2pdf npm run print -- --help
+$ docker run --rm chialab/print2pdf npm run serve -- --help
 ```
