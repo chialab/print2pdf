@@ -41,7 +41,7 @@ const getBuffer = async (source, options) => {
     const scale = options.scale || 1;
 
     console.log(`Fetching page ${source.href}...`);
-    const context = await browser; // TODO: when new version of Puppeteer is released, use `createIncognitoBrowserContext()`.
+    const context = await (await browser).createIncognitoBrowserContext();
     const page = await context.newPage();
     await page.goto(source.href, { waitUntil: 'networkidle2' });
 
@@ -49,7 +49,8 @@ const getBuffer = async (source, options) => {
     await page.emulateMedia(media);
     const buffer = await page.pdf({ format, printBackground, landscape, margin, scale });
 
-    page.close(); // TODO: when new version of Puppeteer is released, close context.
+    page.close();
+    context.close();
 
     return buffer;
 };
