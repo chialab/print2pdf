@@ -9,7 +9,6 @@
     "aws-sdk": "^2.489.0",
     "chrome-aws-lambda": "^1.18.1",
     "puppeteer-core": "^1.18.1",
-    "puppeteer": "^1.18.1",
     "uuid": "^3.3.2"
   },
   "devDependencies": {},
