@@ -39,6 +39,7 @@ Export a publicly available HTML page as a PDF.
 ##### Examples
 
 ```http
+POST /print HTTP/1.1
 Content-Type: application/json
 
 {
@@ -48,6 +49,7 @@ Content-Type: application/json
 ```
 
 ```http
+POST /print HTTP/1.1
 Content-Type: application/json
 
 {

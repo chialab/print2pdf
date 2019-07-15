@@ -1,0 +1,270 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: 'Deploy Print2Pdf API.'
+
+Parameters:
+  BucketName:
+    Type: 'String'
+    Description: 'Bucket name for uploaded PDFs.'
+  BucketExpirationInDays:
+    Type: 'Number'
+    Description: 'Number of days after which objects in bucket are expired. Set 0 to disable.'
+    MinValue: 0
+    Default: 7
+  ApiLoggingLevel:
+    Type: 'String'
+    AllowedValues:
+      - 'OFF'
+      - 'ERROR'
+      - 'INFO'
+    Description: 'Logging level of API Gateway stage.'
+    Default: 'ERROR'
+
+Conditions:
+  GivenBucketName: !Not [ !Equals [ !Ref 'BucketName', '' ] ]
+  ExpireObjects: !Not [ !Equals [ !Ref 'BucketExpirationInDays', 0 ] ]
+
+Outputs:
+  ApiUrl:
+    Description: 'Base URL of API.'
+    Value: !Sub 'https://${Api}.execute-api.${AWS::Region}.${AWS::URLSuffix}/api'
+
+Resources:
+  #######################################
+  ### Bucket to store generated files ###
+  #######################################
+  Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !If
+        - 'GivenBucketName'
+        - !Ref 'BucketName'
+        - !Ref 'AWS::NoValue'
+      LifecycleConfiguration:
+        Rules:
+          - Status: 'Enabled'
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 1
+            ExpirationInDays: !If
+              - 'ExpireObjects'
+              - !Ref 'BucketExpirationInDays'
+              - !Ref 'AWS::NoValue'
+  BucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref 'Bucket'
+      PolicyDocument:
+        Statement:
+          - Effect: 'Allow'
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Sub '${Bucket.Arn}/*'
+
+  #####################
+  ### Lambda layers ###
+  #####################
+  PuppeteerLayer:
+    Type: 'AWS::Lambda::LayerVersion'
+    Properties:
+      CompatibleRuntimes:
+        - 'nodejs8.10'
+      Content: '../layers/puppeteer'
+      Description: !Sub 'Layer with Puppeteer for ${AWS::StackName}.'
+  UuidLayer:
+    Type: 'AWS::Lambda::LayerVersion'
+    Properties:
+      CompatibleRuntimes:
+        - 'nodejs8.10'
+        - 'nodejs10.x'
+      Content: '../layers/uuid'
+      Description: !Sub 'Layer with UUID for ${AWS::StackName}.'
+
+  ##########################################
+  ### Function to print Web pages as PDF ###
+  ##########################################
+  PrintRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              Service: 'lambda.amazonaws.com'
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+      Policies:
+        - PolicyName: 'Upload'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: 'UploadPdf'
+                Effect: 'Allow'
+                Action: 's3:PutObject'
+                Resource: !Sub '${Bucket.Arn}/*'
+  PrintFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Layers:
+        - !Ref 'PuppeteerLayer'
+        - !Ref 'UuidLayer'
+      Code: '../src/lambda/print'
+      Description: !Sub 'Print Web pages as PDFs for ${AWS::StackName}.'
+      Environment:
+        Variables:
+          BUCKET: !Ref 'Bucket'
+      Handler: 'index.handler'
+      Role: !GetAtt 'PrintRole.Arn'
+      Runtime: 'nodejs8.10'
+      MemorySize: 1024
+      Timeout: 15
+  PrintFunctionPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !GetAtt 'PrintFunction.Arn'
+      Action: 'lambda:InvokeFunction'
+      Principal: 'apigateway.amazonaws.com'
+      SourceArn: !Sub 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${Api}/*/POST/print'
+
+  ###################
+  ### API Gateway ###
+  ###################
+  Api:
+    Type: 'AWS::Serverless::Api'
+    Properties:
+      Name: !Ref 'AWS::StackName'
+      StageName: 'api'
+      EndpointConfiguration: 'REGIONAL'
+      MethodSettings:
+        - HttpMethod: '*'
+          ResourcePath: '/*'
+          LoggingLevel: !Ref 'ApiLoggingLevel'
+      DefinitionBody:
+        openapi: '3.0.0'
+        info:
+          title: !Ref 'AWS::StackName'
+          description: !Sub 'REST API for ${AWS::StackName}.'
+          version: '2019-05-19'
+        x-amazon-apigateway-request-validators:
+          all:
+            validateRequestBody: yes
+            validateRequestParameters: yes
+        paths:
+          /print:
+            post:
+              description: 'Render Web page as PDF.'
+              x-amazon-apigateway-request-validator: 'all'
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/PrintRequest'
+              responses:
+                '200':
+                  description: 'PDF generated.'
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/PrintResponse'
+                '400':
+                  description: 'Client error.'
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/ErrorResponse'
+              x-amazon-apigateway-integration:
+                type: 'aws_proxy'
+                httpMethod: 'POST'
+                uri: !Sub 'arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PrintFunction.Arn}/invocations'
+          /status:
+            get:
+              description: 'Healthcheck.'
+              responses:
+                '200':
+                  description: 'Healthy.'
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/StatusResponse'
+              x-amazon-apigateway-integration:
+                type: 'mock'
+                httpMethod: 'POST'
+                requestTemplates:
+                  application/json: '{ "statusCode": 200 }'
+                responses:
+                  '200':
+                    statusCode: 200
+                    responseTemplates:
+                      application/json: '{ "status": true }'
+        components:
+          schemas:
+            ErrorResponse:
+              type: 'object'
+              required: [ 'message' ]
+              properties:
+                message:
+                  type: 'string'
+              additionalProperties: no
+            PrintRequest:
+              type: 'object'
+              required: [ 'url', 'file_name' ]
+              properties:
+                url:
+                  type: 'string'
+                  format: 'url'
+                file_name:
+                  type: 'string'
+                  pattern: '^[a-zA-Z0-9!"#$£%&''()*+,.:;<=>?@\[\] ^_`{|}~-]+\.pdf$'
+                media:
+                  type: 'string'
+                  enum: [ 'screen', 'print' ]
+                  default: 'print'
+                format:
+                  type: 'string'
+                  enum: [
+                    'Letter', 'Legal', 'Tabload', 'Ledger',
+                    'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
+                  ]
+                  default: 'A4'
+                background:
+                  type: 'boolean'
+                  default: yes
+                layout:
+                  type: 'string'
+                  enum: [ 'portrait', 'landscape' ]
+                  default: 'portrait'
+                margin:
+                  type: 'object'
+                  required: [ 'top', 'bottom', 'left', 'right' ]
+                  properties:
+                    top:
+                      type: 'string'
+                    bottom:
+                      type: 'string'
+                    left:
+                      type: 'string'
+                    right:
+                      type: 'string'
+                  additionalProperties: no
+                scale:
+                  type: 'number'
+                  exclusiveMinimum: 0
+                  default: 1
+              additionalProperties: no
+            PrintResponse:
+              type: 'object'
+              required: [ 'url' ]
+              properties:
+                url:
+                  type: 'string'
+                  format: 'url'
+              additionalProperties: no
+            StatusResponse:
+              type: 'object'
+              required: [ 'status' ]
+              properties:
+                status:
+                  type: 'boolean'
+              additionalProperties: no
