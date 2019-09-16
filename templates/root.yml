@@ -12,6 +12,10 @@ Parameters:
     Description: 'Number of days after which objects in bucket are expired. Set 0 to disable.'
     MinValue: 0
     Default: 7
+  CorsAllowedHost:
+    Type: 'String'
+    Description: 'Host to be allowed for CORS requests.'
+    Default: '*'
   ApiLoggingLevel:
     Type: 'String'
     AllowedValues:
@@ -115,6 +119,7 @@ Resources:
       Environment:
         Variables:
           BUCKET: !Ref 'Bucket'
+          CORS_ALLOWED_HOST: !Ref 'CorsAllowedHost'
       Handler: 'index.handler'
       Role: !GetAtt 'PrintRole.Arn'
       Runtime: 'nodejs8.10'
@@ -178,6 +183,32 @@ Resources:
                 type: 'aws_proxy'
                 httpMethod: 'POST'
                 uri: !Sub 'arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PrintFunction.Arn}/invocations'
+            options:
+              description: 'CORS response.'
+              responses:
+                '200':
+                  description: 'OK'
+                  headers:
+                    Access-Control-Allow-Origin:
+                      schema:
+                        type: 'string'
+                    Access-Control-Allow-Methods:
+                      schema:
+                        type: 'string'
+                    Access-Control-Allow-Headers:
+                      schema:
+                        type: 'string'
+              x-amazon-apigateway-integration:
+                type: 'mock'
+                requestTemplates:
+                  application/json: '{"statusCode": 200}'
+                responses:
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type'"
+                      method.response.header.Access-Control-Allow-Origin: !Sub "'${CorsAllowedHost}'"
           /status:
             get:
               description: 'Healthcheck.'

@@ -3,6 +3,7 @@ const uuid4 = require('uuid/v4');
 const print = require('./print.js');
 
 const BUCKET = process.env.BUCKET;
+const CORS_ALLOWED_HOST = process.env.CORS_ALLOWED_HOST;
 
 exports.handler = async ({ body }) => {
     const json = JSON.parse(body);
@@ -13,7 +14,10 @@ exports.handler = async ({ body }) => {
     delete options.url;
     delete options.file_name;
 
-    const headers = { 'Content-Type': 'application/json' };
+    const headers = {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': CORS_ALLOWED_HOST,
+    };
     try {
         const source = new URL(sourceUrl);
         const dest = new URL(`s3://${BUCKET}/${uuid4()}/${fileName}`);
