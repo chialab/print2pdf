@@ -73,7 +73,7 @@ const uploadBuffer = async (Body, Dest) => {
     }
 
     console.log(`Uploading ${Body.byteLength} bytes to ${Dest} using region ${region}`);
-    await s3.putObject({ Body, Bucket, Key }).promise();
+    await s3.putObject({ Body, Bucket, Key, ContentType: 'application/pdf' }).promise();
 
     return new URL(Key, baseUrl);
 };
