@@ -35,7 +35,7 @@ ensure-layer-%:
 
 deploy: package
 	aws cloudformation deploy \
-		--template-file template.yml \
+		--template-file $(PACKAGE_TEMPLATE) \
 		--stack-name $(STACK_NAME) \
 		--tags Project=$(PROJECT) Environment=$(ENVIRONMENT) \
 		--capabilities CAPABILITY_IAM \
@@ -49,7 +49,7 @@ package: ensure-layer-puppeteer ensure-layer-uuid validate
 		--s3-prefix $(PACKAGE_PREFIX) \
 		--profile $(PACKAGE_PROFILE)
 	aws s3 cp $(PACKAGE_TEMPLATE) s3://$(PACKAGE_BUCKET)/$(PACKAGE_PREFIX)/ --profile $(PACKAGE_PROFILE)
-	@echo "https://s3.amazonaws.com/$(PACKAGE_BUCKET)/$(PACKAGE_PREFIX)/$(PACKAGE_TEMPLATE)"
+	@echo "https://$(PACKAGE_BUCKET).s3.amazonaws.com/$(PACKAGE_PREFIX)/$(PACKAGE_TEMPLATE)"
 
 validate:
 	aws cloudformation validate-template \
