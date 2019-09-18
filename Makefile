@@ -27,6 +27,12 @@ layers:
 		npm $(if $(wildcard layers/puppeteer/nodejs/node_modules/*), rebuild, install)
 	yarn --cwd layers/uuid/nodejs install
 
+ensure-layer-%:
+	@if ! [[ -d 'layers/$*/nodejs/node_modules' ]]; then \
+		printf '\033[31mDependencies for layer \033[1m%s\033[22m are not installed, run \033[1m%s\033[22m first!\033[0m\n' $* 'make layers'; \
+		exit 1; \
+	fi
+
 deploy: package
 	aws cloudformation deploy \
 		--template-file template.yml \
@@ -35,7 +41,7 @@ deploy: package
 		--capabilities CAPABILITY_IAM \
 		--profile $(DEPLOY_PROFILE)
 
-package: validate
+package: ensure-layer-puppeteer ensure-layer-uuid validate
 	aws cloudformation package \
 		--template-file templates/root.yml \
 		--output-template-file $(PACKAGE_TEMPLATE) \
