@@ -1,21 +1,31 @@
 # Print to PDF
 
-This repository contains a Docker image used to print a publicly available
-HTML page to PDF and upload the result to an S3 bucket.
+A REST API to generate PDFs from Web pages.
 
-## API
+Just make your HTML document available at a public URL, and generate a PDF out
+of it adjusting options like paper or margins, without installing any paid
+library or software.
+
+Resulting PDFs are uploaded to an S3 bucket where they can be downloaded.
+
+## As a Serverless application
+
+You can deploy this repository as a serverless application using an AWS CloudFormation
+Template to create an AWS API Gateway that invokes Lambda functions to serve requests.
+
+> [**Launch this stack on AWS**](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=MathApi&templateURL=https://chialab-cloudformation-templates.s3-eu-west-1.amazonaws.com/chialab/print2pdf/master/template.yml)
+
+## Endpoints
 
 ### `POST /print`
 
-Export a publicly available HTML page as a PDF.
+> Export a publicly available HTML page as a PDF.
 
-#### Request
-
-##### Headers
+**Headers**:
 
  * `Content-Type: application/json`
 
-##### Body parameters
+**Body parameters**:
 
  * `url` (**required**): the publicly available URL of the page you want to
     print as PDF.
@@ -36,7 +46,7 @@ Export a publicly available HTML page as a PDF.
  * `scale` (_optional_): print scale. Can be any positive decimal number.
     Defaults to 1 (1 means 100%, 0.5 means 50%, 2 means 200%, …).
 
-##### Examples
+**Examples**:
 
 ```http
 POST /print HTTP/1.1
@@ -69,7 +79,7 @@ Content-Type: application/json
 }
 ```
 
-#### Responses
+**Responses**:
 
  * **200 OK**
 
@@ -114,9 +124,9 @@ Content-Type: application/json
 
 ### `GET /status`
 
-Check application status.
+> Check application status.
 
-#### Responses
+**Responses**:
 
  * **200 OK**
 
@@ -129,72 +139,16 @@ Check application status.
     }
     ```
 
-## Deployment
-
-### AWS
-
-A CloudFormation template is provided to help provision and configure all the
-required AWS resources, such as the S3 bucket and the IAM user with permissions
-to upload files exclusively on that bucket.
-
-You may create a new stack using the CloudFormation template in
-`cform-template.yml` and you should be ready to go.
-
-### Heroku
-
-This Docker image has been developed keeping Heroku in mind. If you wish to
-deploy this app on Heroku, simply create an app, and run:
-
-```bash
-# Set config variables:
-$ heroku config:set --app your-app-name AWS_ACCESS_KEY_ID=AKIA000000000EXAMPLE
-$ heroku config:set --app your-app-name AWS_SECRET_ACCESS_KEY=SECRETKEYFROMAWS
-$ heroku config:set --app your-app-name AWS_DEFAULT_REGION=your-region-of-choice
-$ heroku config:set --app your-app-name BASE=s3://your-s3-bucket/optional-prefix
-
-# Login on Heroku private Docker registry (only once):
-$ heroku container:login
-
-# Build and push the image to deploy:
-$ heroku container:push web --app your-app-name
-```
-
 ## Development
 
-### Building the image
+_All the following instructions assume you have at least [NodeJS](https://nodejs.org/) and [Yarn](https://yarnpkg.com/) installed._
 
-```bash
-$ docker build -t chialab/print2pdf .
-```
+**Start a simulated AWS API Gateway** (_provided you have AWS SAM Local and Docker installed_):
+> `yarn run api-gateway`
 
-### Running the container
+**Validate CloudFormation template** (_provided you have AWS CLI installed_)
+> `make validate`
 
-1. (Recommended) Create a `.env` file containing your AWS credentials:
-    ```bash
-    # AWS IAM credentials
-    AWS_ACCESS_KEY_ID=AKIA000000000EXAMPLE
-    AWS_SECRET_ACCESS_KEY=SECRETKEYFROMAWS
-
-    # Set bucket region if different from us-east-1:
-    AWS_DEFAULT_REGION=eu-west-1
-
-    # Pass S3 base URL
-    BASE=s3://your-bucket-name/some-optional-prefix
-    ```
-
-2. Run Docker container:
-    ```bash
-    # As a server bound to your local port 3000:
-    $ docker run --rm --env-file .env -p 3000:8080 chialab/print2pdf
-
-    # As a CLI command to export a single page:
-    $ docker run --rm --env-file .env chialab/print2pdf npm run print -- https://www.chialab.io/ chialabio.pdf
-    ```
-
-### Listing available options
-
-```bash
-$ docker run --rm chialab/print2pdf npm start -- --help
-$ docker run --rm chialab/print2pdf npm run print -- --help
-$ docker run --rm chialab/print2pdf npm run serve -- --help
-```
+**Package CloudFormation template** (_provided you have AWS CLI and Docker installed_)
+> `make layers` (_this is needed only the first time, then when updating MathJax version_)
+> `make package`

@@ -3,7 +3,7 @@
   "author": "Chialab srl",
   "version": "2.0.0",
   "scripts": {
-    "serve": "sam local start-api --template templates/root.yml"
+    "api-gateway": "sam local start-api --template templates/root.yml"
   },
   "dependencies": {
     "aws-sdk": "^2.489.0",
