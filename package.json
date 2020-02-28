@@ -1,6 +1,6 @@
 {
   "name": "@chialab/print2pdf",
-  "author": "Chialab srl",
+  "author": "Chialab <dev@chialab.io> (https://www.chialab.it)",
   "version": "2.0.0",
   "scripts": {
     "api-gateway": "sam local start-api --template templates/root.yml"

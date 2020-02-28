@@ -12,9 +12,9 @@ Parameters:
     Description: 'Number of days after which objects in bucket are expired. Set 0 to disable.'
     MinValue: 0
     Default: 7
-  CorsAllowedHost:
+  CorsAllowedHosts:
     Type: 'String'
-    Description: 'Host to be allowed for CORS requests.'
+    Description: 'Hosts to be allowed for CORS requests.'
     Default: '*'
   ApiLoggingLevel:
     Type: 'String'
@@ -119,7 +119,7 @@ Resources:
       Environment:
         Variables:
           BUCKET: !Ref 'Bucket'
-          CORS_ALLOWED_HOST: !Ref 'CorsAllowedHost'
+          CORS_ALLOWED_HOSTS: !Ref 'CorsAllowedHosts'
       Handler: 'index.handler'
       Role: !GetAtt 'PrintRole.Arn'
       Runtime: 'nodejs8.10'
@@ -208,7 +208,7 @@ Resources:
                     responseParameters:
                       method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
                       method.response.header.Access-Control-Allow-Headers: "'Content-Type'"
-                      method.response.header.Access-Control-Allow-Origin: !Sub "'${CorsAllowedHost}'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
           /status:
             get:
               description: 'Healthcheck.'
