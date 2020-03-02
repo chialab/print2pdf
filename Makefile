@@ -23,7 +23,7 @@ layers:
 		-v $(PWD)/layers/puppeteer/nodejs:/var/task \
 		-e NODE_ENV=production \
 		-e PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1 \
-		lambci/lambda:build-nodejs8.10 \
+		lambci/lambda:build-nodejs12.x \
 		npm $(if $(wildcard layers/puppeteer/nodejs/node_modules/*), rebuild, install)
 	yarn --cwd layers/uuid/nodejs install
 

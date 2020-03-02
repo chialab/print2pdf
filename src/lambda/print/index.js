@@ -1,5 +1,5 @@
 const { URL } = require('url');
-const uuid4 = require('uuid/v4');
+const { v4: uuid4 } = require('uuid');
 const print = require('./print.js');
 
 const BUCKET = process.env.BUCKET;

@@ -72,14 +72,15 @@ Resources:
     Type: 'AWS::Lambda::LayerVersion'
     Properties:
       CompatibleRuntimes:
-        - 'nodejs8.10'
+        - 'nodejs12.x'
+        - 'nodejs10.x'
       Content: '../layers/puppeteer'
       Description: !Sub 'Layer with Puppeteer for ${AWS::StackName}.'
   UuidLayer:
     Type: 'AWS::Lambda::LayerVersion'
     Properties:
       CompatibleRuntimes:
-        - 'nodejs8.10'
+        - 'nodejs12.x'
         - 'nodejs10.x'
       Content: '../layers/uuid'
       Description: !Sub 'Layer with UUID for ${AWS::StackName}.'
@@ -122,7 +123,7 @@ Resources:
           CORS_ALLOWED_HOSTS: !Ref 'CorsAllowedHosts'
       Handler: 'index.handler'
       Role: !GetAtt 'PrintRole.Arn'
-      Runtime: 'nodejs8.10'
+      Runtime: 'nodejs12.x'
       MemorySize: 1024
       Timeout: 15
   PrintFunctionPermission:
