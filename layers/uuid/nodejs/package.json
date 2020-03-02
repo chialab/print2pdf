@@ -1,5 +1,5 @@
 {
   "dependencies": {
-    "uuid": "^3.3.2"
+    "uuid": "^7.0.1"
   }
 }
