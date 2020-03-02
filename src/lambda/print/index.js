@@ -5,8 +5,9 @@ const print = require('./print.js');
 const BUCKET = process.env.BUCKET;
 const CORS_ALLOWED_HOSTS = process.env.CORS_ALLOWED_HOSTS;
 
-exports.handler = async ({ body, headers: { Origin } }) => {
+exports.handler = async ({ body, headers: reqHeaders }) => {
     const json = JSON.parse(body);
+    const origin = reqHeaders.origin || reqHeaders.Origin;
 
     const sourceUrl = json.url;
     const fileName = json.file_name;
@@ -18,10 +19,10 @@ exports.handler = async ({ body, headers: { Origin } }) => {
         'Content-Type': 'application/json',
     };
 
-    if (CORS_ALLOWED_HOSTS) {
+    if (CORS_ALLOWED_HOSTS && origin) {
         const hosts = CORS_ALLOWED_HOSTS.split(',');
-        if (hosts.includes(Origin)) {
-            headers['Access-Control-Allow-Origin'] = Origin;
+        if (hosts.includes(origin)) {
+            headers['Access-Control-Allow-Origin'] = origin;
         }
     }
 
