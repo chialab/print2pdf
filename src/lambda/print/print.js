@@ -7,6 +7,12 @@ const puppeteer = require('puppeteer-core');
 const browser = chromium.executablePath
     .then((executablePath) => puppeteer.launch({ executablePath, args: chromium.args }));
 
+const timeout = (time) => {
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(), time);
+    });
+};
+
 /**
  * @typedef {"screen"|"print"} PrintMedia
  * @typedef {"Letter"|"Legal"|"Tabload"|"Ledger"|"A0"|"A1"|"A2"|"A3"|"A4"|"A5"} PrintFormat
@@ -39,6 +45,8 @@ const getBuffer = async (source, options) => {
         console.time(`Navigating to ${source}`);
         await page.goto(source.href, { waitUntil: 'networkidle2' });
         console.timeEnd(`Navigating to ${source}`);
+
+        await timeout(1000);
 
         console.time(`Exporting as PDF with options ${JSON.stringify(options)}`);
         await page.emulateMedia(media);
