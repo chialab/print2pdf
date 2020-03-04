@@ -20,9 +20,13 @@ exports.handler = async ({ body, headers: reqHeaders }) => {
     };
 
     if (CORS_ALLOWED_HOSTS && origin) {
-        const hosts = CORS_ALLOWED_HOSTS.split(',');
-        if (hosts.includes(origin)) {
-            headers['Access-Control-Allow-Origin'] = origin;
+        if (CORS_ALLOWED_HOSTS === '*') {
+            headers['Access-Control-Allow-Origin'] = '*';
+        } else {
+            const hosts = CORS_ALLOWED_HOSTS.split(',');
+            if (hosts.includes(origin)) {
+                headers['Access-Control-Allow-Origin'] = origin;
+            }
         }
     }
 
