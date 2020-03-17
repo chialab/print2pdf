@@ -1,0 +1,6 @@
+/.env
+/node_modules
+/template.yml
+/logo.svg
+/yarn.lock
+/Makefile
