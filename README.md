@@ -1,6 +1,20 @@
-# Print to PDF
+<p align="center">
+    <a href="https://www.chialab.io/p/print2pdf">
+        <img alt="Print to PDF logo" width="144" height="144" src="https://raw.githack.com/chialab/print2pdf/master/logo.svg" />
+    </a>
+</p>
 
-A REST API to generate PDFs from Web pages.
+<p align="center">
+  <strong>Print to PDF</strong> • A REST API to generate PDFs from Web pages.
+</p>
+
+<p align="center">
+    <a href="https://github.com/chialab/print2pdf"><img alt="Source link" src="https://img.shields.io/badge/Source-GitHub-lightgrey.svg?style=flat-square"></a>
+    <a href="https://www.chialab.it"><img alt="Authors link" src="https://img.shields.io/badge/Authors-Chialab-lightgrey.svg?style=flat-square"></a>
+    <a href="https://github.com/chialab/print2pdf/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/chialab/print2pdf.svg?style=flat-square"></a>
+</p>
+
+---
 
 Just make your HTML document available at a public URL, and generate a PDF out
 of it adjusting options like paper or margins, without installing any paid
@@ -156,3 +170,9 @@ _All the following instructions assume you have at least [NodeJS](https://nodejs
 **Deploy CloudFormation template** (_provided you have AWS CLI and Docker installed_)
 > `make deploy`
 > `make deploy ENVIRONMENT=Production`
+
+---
+
+## License
+
+Print to PDF is released under the [MIT](https://github.com/chialab/print2pdf/blob/master/LICENSE) license.
