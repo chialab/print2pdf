@@ -20,10 +20,12 @@ app:
 
 layers:
 	docker run --rm \
+        --entrypoint /usr/bin/env \
+        -w /var/task \
 		-v $(PWD)/layers/puppeteer/nodejs:/var/task \
 		-e NODE_ENV=production \
 		-e PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1 \
-		lambci/lambda:build-nodejs14.x \
+		public.ecr.aws/lambda/nodejs:14 \
 		npm $(if $(wildcard layers/puppeteer/nodejs/node_modules/*), rebuild, install)
 	yarn --cwd layers/uuid/nodejs install
 
