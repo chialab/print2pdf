@@ -11,6 +11,8 @@
     "puppeteer-core": "^9.1.1",
     "uuid": "^8.3.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/puppeteer": "^5.4.3"
+  },
   "private": true
 }
