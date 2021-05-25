@@ -10,9 +10,8 @@ const getBrowser = () => chromium.executablePath
 let browser = getBrowser();
 
 const getPage = async () => {
+    const context = await browser;
     try {
-        const context = await browser;
-
         return await context.newPage();
     } catch (err) {
         // Restart browser.
@@ -24,9 +23,7 @@ const getPage = async () => {
         browser = getBrowser();
 
         // Retry opening page.
-        const context = await browser;
-
-        return await context.newPage();
+        return await (await browser).newPage();
     }
 };
 
