@@ -68,7 +68,7 @@ const getBuffer = async (source, options) => {
         await timeout(1000);
 
         console.time(`Exporting as PDF with options ${JSON.stringify(options)}`);
-        await page.emulateMedia(media);
+        await page.emulateMediaType(media);
         const buffer = await page.pdf({ format, printBackground, landscape, margin, scale });
         console.timeEnd(`Exporting as PDF with options ${JSON.stringify(options)}`);
 
