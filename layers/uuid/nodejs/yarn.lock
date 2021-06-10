@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-uuid@^7.0.1:
-  version "7.0.1"
-  resolved "https://registry.npmjs.org/uuid/-/uuid-7.0.1.tgz#95ed6ff3d8c881cbf85f0f05cc3915ef994818ef"
-  integrity sha512-yqjRXZzSJm9Dbl84H2VDHpM3zMjzSJQ+hn6C4zqd5ilW+7P4ZmLEEqwho9LjP+tGuZlF4xrHQXT0h9QZUS/pWA==
+uuid@^8.3.2:
+  version "8.3.2"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
+  integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==

@@ -3,9 +3,29 @@ const AWS = require('aws-sdk');
 const chromium = require('chrome-aws-lambda');
 const puppeteer = require('puppeteer-core');
 
-/** Browser instance. */
-const browser = chromium.executablePath
+const getBrowser = () => chromium.executablePath
     .then((executablePath) => puppeteer.launch({ executablePath, args: chromium.args }));
+
+/** Browser instance. */
+let browser = getBrowser();
+
+const getPage = async () => {
+    const context = await browser;
+    try {
+        return await context.newPage();
+    } catch (err) {
+        // Restart browser.
+        try {
+            await context.close();
+        } catch (err) {
+            console.error(err);
+        }
+        browser = getBrowser();
+
+        // Retry opening page.
+        return await (await browser).newPage();
+    }
+};
 
 const timeout = (time) => {
     return new Promise((resolve) => {
@@ -38,8 +58,7 @@ const getBuffer = async (source, options) => {
 
     console.time('Opening new page');
     // const context = await (await browser).createIncognitoBrowserContext();
-    const context = await browser;
-    const page = await context.newPage();
+    const page = await getPage();
     console.timeEnd('Opening new page');
     try {
         console.time(`Navigating to ${source}`);
@@ -49,7 +68,7 @@ const getBuffer = async (source, options) => {
         await timeout(1000);
 
         console.time(`Exporting as PDF with options ${JSON.stringify(options)}`);
-        await page.emulateMedia(media);
+        await page.emulateMediaType(media);
         const buffer = await page.pdf({ format, printBackground, landscape, margin, scale });
         console.timeEnd(`Exporting as PDF with options ${JSON.stringify(options)}`);
 
