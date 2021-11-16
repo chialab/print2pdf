@@ -6,7 +6,7 @@
     "api-gateway": "sam local start-api --template templates/root.yml"
   },
   "dependencies": {
-    "aws-sdk": "^2.630.0",
+    "aws-sdk": "^2.814.0",
     "chrome-aws-lambda": "^2.1.1",
     "puppeteer-core": "^2.1.1",
     "uuid": "^7.0.1"
